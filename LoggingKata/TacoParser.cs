@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Data;
+using System.Linq;
 using GeoCoordinatePortable;
 
 namespace LoggingKata
@@ -42,22 +44,53 @@ namespace LoggingKata
 
             var cells = line.Split(',');
 
-            if (cells.Length < 3)
-            {       
-                logger.LogWarning($"{line} - doesnt have 3 columns/cells...");
-                return null; // TODO Implement
-            }
-                       
-            double latitude = double.Parse(cells[0]);
-            double longitude = double.Parse(cells[1]);
-            string storeName = cells[2];
-                       
-            var tacoBell = new TacoBell();
-            tacoBell.Name = storeName;
-            tacoBell.Location = new Point { Latitude = latitude, Longitude = longitude };
+            double? latitude = null;
+            double? longitude = null;
+            string storeName = null;
 
-            logger.LogInfo("Row Parsed");
-            return tacoBell;
+            switch (cells.Length)
+            {
+                case 3:
+                    try
+                    { 
+                        latitude = double.Parse(cells[0]);
+                    }
+                    catch 
+                    {                        
+                        logger.LogWarning($"{line} - couldnt parse latitude");                        
+                    }
+                    
+                    try
+                    {
+                        longitude = double.Parse(cells[1]);
+                    }
+                    catch
+                    {                        
+                        logger.LogWarning($"{line} - couldnt parse longitude");
+                    }
+                    try 
+                    {
+                        storeName = cells[2];
+                    } 
+                    catch 
+                    {                        
+                        logger.LogWarning($"{line} - couldnt parse storename");
+                    }
+
+                    while (latitude != null && longitude != null && storeName != null)
+                    {
+                        var tacoBell = new TacoBell();
+                        tacoBell.Name = storeName;
+                        tacoBell.Location = new Point { Latitude = (double)latitude, Longitude = (double)longitude };
+                        logger.LogInfo("Row Parsed");
+                        return tacoBell;
+                    }
+                    break;
+                default:
+                    logger.LogWarning($"{line} - doesnt have 3 columns/cells...");
+                    break;
+            }
+            return null; 
         }
 
         public static void RunParseProgram(string[] _lines, out ITrackable _tacoBellA, out ITrackable _tacoBellB, out double _distanceBetween, ILog _logger)
@@ -65,35 +98,10 @@ namespace LoggingKata
             var parser = new TacoParser();
 
             _logger.LogInfo("Begin parsing");
-            var locations = _lines.Select(parser.Parse).ToArray();
-
+            var locations = _lines.Select(parser.Parse).Where( x => x!= null).ToArray();
             _tacoBellA = null;
             _tacoBellB = null;
             double distance = 0;
-
-            //for (int i = 0; i < locations.Length; i++)
-            //{
-            //    var locA = locations[i];
-
-            //    var corA = new GeoCoordinate();
-            //    corA.Latitude = locA.Location.Latitude;
-            //    corA.Longitude = locA.Location.Longitude;
-
-            //    for (int j = 0; j < locations.Length; j++)
-            //    {
-            //        var locB = locations[j];
-
-            //        var corB = new GeoCoordinate();
-            //        corB.Latitude = locB.Location.Latitude;
-            //        corB.Longitude = locB.Location.Longitude;
-
-            //        if (corA.GetDistanceTo(corB) > distance)
-            //        {
-            //            _tacoBellA = locA;
-            //            _tacoBellB = locB;
-            //        }
-            //    }
-            //}
 
             foreach (var locationA in locations)
             {
@@ -112,13 +120,9 @@ namespace LoggingKata
                 }
             }
 
-            //GeoCoordinate a = new GeoCoordinate { Latitude = _tacoBellA.Location.Latitude, Longitude = _tacoBellB.Location.Longitude };
-            //GeoCoordinate b = new GeoCoordinate { Latitude = _tacoBellB.Location.Latitude, Longitude = _tacoBellB.Location.Longitude };
-            _tacoBellA = _tacoBellA;
-            _tacoBellB = _tacoBellB;
+            _ = _tacoBellA;
+            _ = _tacoBellB;
             _distanceBetween = distance;
-
-            logger.LogInfo($"{_tacoBellA.Name} and {_tacoBellB.Name} are the furthest apart, with a distance of {_distanceBetween} meters");
         }
     }
 }

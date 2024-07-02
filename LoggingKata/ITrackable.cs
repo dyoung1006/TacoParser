@@ -1,4 +1,5 @@
-﻿namespace LoggingKata
+﻿
+namespace LoggingKata
 {
     public interface ITrackable
     {

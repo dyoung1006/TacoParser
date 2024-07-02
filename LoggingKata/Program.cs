@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.IO;
-using GeoCoordinatePortable;
 
 namespace LoggingKata
 {
@@ -54,7 +53,7 @@ namespace LoggingKata
             { 
                 case 0:
                     Exception e = new Exception();
-                    logger.LogError($"",e);
+                    logger.LogError($"The file has zero records",e);
                     logger.LogInfo($"program can not continue without enough data to run.");
                     break;
                 case 1:
@@ -68,68 +67,10 @@ namespace LoggingKata
                     double distanceBetween = 0;
                     TacoParser.RunParseProgram(lines,out tacoBellA,out tacoBellB, out distanceBetween, logger);
                     logger.LogInfo($"{tacoBellA.Name} and {tacoBellB.Name} are the furthest apart, with a distance of {distanceBetween} meters");
-                    break;
+                    break;                    
             }
 
-            //var parser = new TacoParser();
-
-            //logger.LogInfo("Begin parsing");
-            //var locations = lines.Select(parser.Parse).ToArray();
-
-            //ITrackable tacoBellA = null;
-            //ITrackable tacoBellB = null;
-            //double distance = 0;
-
-            //for (int i = 0; i < locations.Length; i++)
-            //{
-            //    var locA = locations[i];
-
-            //    var corA =new GeoCoordinate();
-            //    corA.Latitude = locA.Location.Latitude;
-            //    corA.Longitude = locA.Location.Longitude;
-
-            //    for (int j = 0; j < locations.Length; j++)
-            //    {
-            //        var locB = locations[j];
-
-            //        var corB =new GeoCoordinate();
-            //        corB.Latitude = locB.Location.Latitude;
-            //        corB.Longitude = locB.Location.Longitude;
-
-            //        if (corA.GetDistanceTo(corB) > distance)
-            //        {
-            //            tacoBellA = locA;
-            //            tacoBellB = locB;
-            //        }
-            //    }
-
-            //}
-
-
-            //foreach (var locationA in locations)
-            //{
-            //    GeoCoordinate a = new GeoCoordinate { Latitude = locationA.Location.Latitude, Longitude = locationA.Location.Longitude };
-
-            //    foreach (var locationB in locations)
-            //    {
-            //        GeoCoordinate b = new GeoCoordinate { Latitude = locationB.Location.Latitude, Longitude = locationB.Location.Longitude };
-
-            //        distance = a.GetDistanceTo(b);
-
-            //        if (a.GetDistanceTo(b) > distance)
-            //        {
-            //            distance = a.GetDistanceTo(b);
-            //            tacoBellA = locationA;
-            //            tacoBellB = locationB;
-            //        }
-            //    }
-            //}
-
-            //GeoCoordinate a = new GeoCoordinate { Latitude = tacoBellA.Location.Latitude, Longitude = tacoBellB.Location.Longitude };
-            //GeoCoordinate b = new GeoCoordinate { Latitude = tacoBellB.Location.Latitude, Longitude = tacoBellB.Location.Longitude };
-
-
-            //logger.LogInfo($"{tacoBellA.Name} and {tacoBellB.Name} are the furthest apart, with a distance of {Helpers.DistanceBetween(a,b)} meters");
+            Console.ReadLine();            
         }
     }
 }
